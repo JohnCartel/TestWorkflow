@@ -36,13 +36,6 @@ RUN powershell -Command \
     Start-Process msiexec.exe -ArgumentList '/i', '7zip.msi', '/quiet', '/norestart' -NoNewWindow -Wait; \
     Remove-Item -Force 7zip.msi
 
-# 安装 Visual Studio Code
-# RUN powershell -Command \
-#     $ErrorActionPreference = 'Stop'; \
-#     Invoke-WebRequest -Uri https://update.code.visualstudio.com/latest/win32-x64-user/stable -OutFile vscode.exe; \
-#     Start-Process vscode.exe -ArgumentList '/verysilent', '/norestart' -NoNewWindow -Wait; \
-#     Remove-Item -Force vscode.exe
-
 # 设置工作目录
 WORKDIR /workspace
 
