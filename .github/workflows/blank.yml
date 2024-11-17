@@ -1,4 +1,30 @@
-name: Save Docker Image as Artifact
+# name: Save Docker Image as Artifact
+
+# on: [push]
+
+# jobs:
+#   build:
+#     runs-on: windows-latest
+
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v2
+
+#     - name: Log in to Docker Hub
+#       run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+#     - name: Pull Docker image
+#       run: docker pull envoyproxy/envoy-windows-ltsc2022-dev
+
+#     - name: Save Docker image to file
+#       run: docker save -o envoy-image.tar envoyproxy/envoy-windows-ltsc2022-dev
+
+#     - name: Upload Docker image as artifact
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: envoy-image
+#         path: envoy-image.tar
+name: Build Docker Image and Save as Artifact
 
 on: [push]
 
@@ -10,17 +36,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
     - name: Log in to Docker Hub
       run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-    - name: Pull Docker image
-      run: docker pull envoyproxy/envoy-windows-ltsc2022-dev
+    - name: Build Docker image
+      run: docker build -t my-windows-image .
 
     - name: Save Docker image to file
-      run: docker save -o envoy-image.tar envoyproxy/envoy-windows-ltsc2022-dev
+      run: docker save -o my-windows-image.tar my-windows-image
 
     - name: Upload Docker image as artifact
       uses: actions/upload-artifact@v3
       with:
-        name: envoy-image
-        path: envoy-image.tar
+        name: my-windows-image
+        path: my-windows-image.tar
