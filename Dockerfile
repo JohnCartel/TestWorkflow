@@ -21,10 +21,14 @@ RUN powershell -Command "$ErrorActionPreference = 'Stop'; \
     Start-Process msiexec.exe -ArgumentList '/i', '7zip.msi', '/quiet', '/norestart' -NoNewWindow -Wait; \
     Remove-Item -Force 7zip.msi; \
     Invoke-WebRequest -Uri https://aka.ms/vs/16/release/vs_buildtools.exe -OutFile vs_buildtools.exe; \
-    Start-Process vs_buildtools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', '--installPath', 'C:\BuildTools', '--add', 'Microsoft.VisualStudio.Workload.MSBuildTools', '--add', 'Microsoft.VisualStudio.Workload.VCTools', '--add', 'Microsoft.VisualStudio.Component.Windows10SDK.19041' -NoNewWindow -Wait; \
+    Start-Process vs_buildtools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', '--installPath', 'C:\BuildTools', '--add', 'Microsoft.VisualStudio.Workload.MSBuildTools', '--add', 'Microsoft.VisualStudio.Workload.VCTools' -NoNewWindow -Wait; \
     Remove-Item -Force vs_buildtools.exe; \
     npm config set msvs_version 2019; \
-    npm config set python python3.10"
+    npm config set python python3.10; \
+    Remove-Item -Recurse -Force C:\ProgramData\Microsoft\VisualStudio\Packages; \
+    Remove-Item -Recurse -Force C:\ProgramData\Microsoft\VisualStudio\Packages\_Instances; \
+    Remove-Item -Recurse -Force C:\ProgramData\Microsoft\VisualStudio\Packages\_bootstrapper; \
+    Remove-Item -Recurse -Force C:\ProgramData\Microsoft\VisualStudio\Packages\_bootstrapper\_bootstrapper;"
 
 # 设置工作目录
 WORKDIR /workspace
