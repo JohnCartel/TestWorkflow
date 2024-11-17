@@ -45,8 +45,19 @@ jobs:
     - name: Save Docker image to file
       run: docker save -o my-windows-image.tar my-windows-image
 
-    - name: Upload Docker image as artifact
+    - name: Install 7-Zip
+      run: choco install 7zip --no-progress
+
+    - name: Compress Docker image with maximum compression
+      run: 7z a -tzip -mx=9 my-windows-image.zip my-windows-image.tar
+
+    - name: Output compressed file size
+      run: |
+        $size = (Get-Item my-windows-image.zip).Length / 1MB
+        Write-Output "Compressed file size: $size MB"
+
+    - name: Upload compressed Docker image as artifact
       uses: actions/upload-artifact@v3
       with:
         name: my-windows-image
-        path: my-windows-image.tar
+        path: my-windows-image.zip
