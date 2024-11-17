@@ -1,63 +1,65 @@
-# name: Save Docker Image as Artifact
+name: Build and Push Docker Images
 
-# on: [push]
-
-# jobs:
-#   build:
-#     runs-on: windows-latest
-
-#     steps:
-#     - name: Checkout repository
-#       uses: actions/checkout@v2
-
-#     - name: Log in to Docker Hub
-#       run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-
-#     - name: Pull Docker image
-#       run: docker pull envoyproxy/envoy-windows-ltsc2022-dev
-
-#     - name: Save Docker image to file
-#       run: docker save -o envoy-image.tar envoyproxy/envoy-windows-ltsc2022-dev
-
-#     - name: Upload Docker image as artifact
-#       uses: actions/upload-artifact@v3
-#       with:
-#         name: envoy-image
-#         path: envoy-image.tar
-name: Build Docker Image and Save as Artifact
-
-on: [push]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
-    runs-on: windows-2019
+  build-base:
+    runs-on: windows-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
     - name: Log in to Docker Hub
-      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-
-    - name: Build Docker image
-      run: docker build -t my-windows-image .
-
-    - name: Save Docker image to file
-      run: docker save -o my-windows-image.tar my-windows-image
-
-    - name: Install 7-Zip
-      run: choco install 7zip --no-progress
-
-    - name: Compress Docker image with maximum compression
-      run: 7z a -tzip -mx=9 my-windows-image.zip my-windows-image.tar
-
-    - name: Output compressed file size
-      run: |
-        $size = (Get-Item my-windows-image.zip).Length / 1MB
-        Write-Output "Compressed file size: $size MB"
-
-    - name: Upload compressed Docker image as artifact
-      uses: actions/upload-artifact@v3
+      uses: docker/login-action@v1
       with:
-        name: my-windows-image
-        path: my-windows-image.zip
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push base Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: Dockerfile.base
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/base-image:latest
+
+    - name: Log out from Docker Hub
+      run: docker logout
+
+  build-final:
+    runs-on: windows-latest
+    needs: build-base
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push final Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/my-windows-image:latest
+
+    - name: Log out from Docker Hub
+      run: docker logout

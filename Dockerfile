@@ -1,19 +1,5 @@
-# 使用 Windows Server Core LTSC 2019 作为基础镜像
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
-
-# 安装 .NET Framework 4.8 的精简运行时
-RUN powershell -Command "$ErrorActionPreference = 'Stop'; \
-    Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2088631 -OutFile ndp48-x86-x64-allos-enu.exe; \
-    Start-Process -FilePath ndp48-x86-x64-allos-enu.exe -ArgumentList '/quiet', '/norestart' -NoNewWindow -Wait; \
-    Remove-Item -Force ndp48-x86-x64-allos-enu.exe"
-
-# 安装 Chocolatey
-RUN powershell -Command "$ErrorActionPreference = 'Stop'; \
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12; \
-    Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression"
-
-# 重启以完成 .NET Framework 4.8 的安装
-RUN powershell -Command "Restart-Computer -Force"
+# 基于第一个镜像
+FROM your-dockerhub-username/base-image:latest
 
 # 安装 Git、Node.js 16.x、npm、Yarn、Python、7-Zip 和 Visual Studio Build Tools (仅 MSBuildTools 和 VCTools)
 RUN choco install -y git \
