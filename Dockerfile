@@ -11,6 +11,7 @@ RUN powershell -Command "$ErrorActionPreference = 'Stop'; \
     Invoke-WebRequest -Uri https://nodejs.org/dist/v16.16.0/node-v16.16.0-x64.msi -OutFile nodejs.msi; \
     Start-Process msiexec.exe -ArgumentList '/i', 'nodejs.msi', '/quiet', '/norestart' -NoNewWindow -Wait; \
     Remove-Item -Force nodejs.msi; \
+    $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine'); \
     npm install -g npm@latest; \
     npm install -g yarn; \
     Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.10.4/python-3.10.4-amd64.exe -OutFile python.exe; \
