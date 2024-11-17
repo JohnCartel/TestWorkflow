@@ -7,7 +7,8 @@ RUN powershell -Command \
     Invoke-WebRequest -Uri https://github.com/git-for-windows/git/releases/download/v2.39.1.windows.1/MinGit-2.39.1-64-bit.zip -OutFile git.zip; \
     Expand-Archive -Path git.zip -DestinationPath C:\git; \
     Remove-Item -Force git.zip; \
-    setx /M PATH "$($Env:PATH);C:\git\cmd"
+    setx /M PATH "$($Env:PATH);C:\git\cmd" && \
+    $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine')
 
 # 安装 Node.js 16.16.0
 RUN powershell -Command \
