@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-base:
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     steps:
     - name: Checkout repository
@@ -31,7 +31,7 @@ jobs:
       run: docker logout
 
   build-final:
-    runs-on: windows-latest
+    runs-on: windows-2019
     needs: build-base
 
     steps:
