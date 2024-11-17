@@ -12,6 +12,9 @@ RUN powershell -Command "$ErrorActionPreference = 'Stop'; \
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12; \
     Invoke-WebRequest -Uri https://chocolatey.org/install.ps1 -UseBasicParsing | Invoke-Expression"
 
+# 重启以完成 .NET Framework 4.8 的安装
+RUN powershell -Command "Restart-Computer -Force"
+
 # 安装 Git、Node.js 16.x、npm、Yarn、Python、7-Zip 和 Visual Studio Build Tools (仅 MSBuildTools 和 VCTools)
 RUN choco install -y git \
     nodejs --version=16.16.0 \
